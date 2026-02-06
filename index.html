@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fortune Cookie – Pull to Reveal</title>
+<title>Fortune Cookie – Pull Sideways</title>
 
 <style>
   body {
@@ -21,6 +21,7 @@
     width: 360px;
     text-align: center;
     user-select: none;
+    overflow: visible;
   }
 
   .cookie {
@@ -29,39 +30,41 @@
     height: auto;
     display: block;
     pointer-events: none;
-    z-index: 1;
     position: relative;
+    z-index: 1;
   }
 
   /* DRAG ZONE */
   .slot {
     position: absolute;
-    top: 50%;
+    top: 52%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 210px;
-    height: 46px;
+    width: 220px;
+    height: 50px;
     z-index: 3;
     cursor: grab;
   }
 
   .slot:active { cursor: grabbing; }
 
-  /* PAPER WRAPPER (reveals height) */
+  /* MASK THAT SLIDES SIDEWAYS */
   .paper-mask {
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 190px;
-    height: 0px; /* grows as you pull */
+    left: 0;
+    width: 0px; /* expands horizontally */
+    height: 100%;
     overflow: hidden;
   }
 
   /* PAPER */
   .paper {
-    width: 100%;
-    padding: 14px 12px 18px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 420px; /* intentionally wider than slot */
+    padding: 14px 16px;
     background: #fffef8;
     border-radius: 3px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
@@ -69,6 +72,8 @@
     font-size: 14px;
     line-height: 1.6;
     text-align: center;
+    transform: translateX(0);
+    transition: none;
   }
 
   .hint {
@@ -92,7 +97,7 @@
     </div>
   </div>
 
-  <div class="hint">Pull the fortune to keep reading</div>
+  <div class="hint">Pull the fortune sideways to keep reading</div>
 </div>
 
 <script>
@@ -101,36 +106,40 @@
   const paper = document.getElementById("paper");
 
   let dragging = false;
-  let startY = 0;
-  let pull = 0;
+  let startX = 0;
+  let pullX = 0;
 
   const MAX_PULL = 320;
 
-  function startDrag(y) {
+  function startDrag(x) {
     dragging = true;
-    startY = y - pull;
+    startX = x - pullX;
   }
 
-  function drag(y) {
+  function drag(x) {
     if (!dragging) return;
 
-    pull = y - startY;
-    if (pull < 0) pull = 0;
-    if (pull > MAX_PULL) pull = MAX_PULL;
+    pullX = x - startX;
+    if (pullX < 0) pullX = 0;
+    if (pullX > MAX_PULL) pullX = MAX_PULL;
 
-    mask.style.height = pull + "px";
+    // reveal more paper
+    mask.style.width = pullX + "px";
+
+    // slide paper slightly for motion feel
+    paper.style.transform = `translateX(${pullX * 0.25}px)`;
   }
 
   function stopDrag() {
     dragging = false;
   }
 
-  slot.addEventListener("mousedown", e => startDrag(e.clientY));
-  document.addEventListener("mousemove", e => drag(e.clientY));
+  slot.addEventListener("mousedown", e => startDrag(e.clientX));
+  document.addEventListener("mousemove", e => drag(e.clientX));
   document.addEventListener("mouseup", stopDrag);
 
-  slot.addEventListener("touchstart", e => startDrag(e.touches[0].clientY));
-  document.addEventListener("touchmove", e => drag(e.touches[0].clientY));
+  slot.addEventListener("touchstart", e => startDrag(e.touches[0].clientX));
+  document.addEventListener("touchmove", e => drag(e.touches[0].clientX));
   document.addEventListener("touchend", stopDrag);
 </script>
 
