@@ -12,8 +12,7 @@
       justify-content: center;
       align-items: center;
       background: #111;
-      font-family: "Georgia", serif;
-      overflow: hidden;
+      font-family: Georgia, serif;
     }
 
     .cookie-container {
@@ -21,33 +20,30 @@
       width: 360px;
       text-align: center;
       user-select: none;
+      overflow: visible;
     }
 
     .cookie {
       width: 100%;
-      cursor: grab;
-      z-index: 2;
       position: relative;
-    }
-
-    .cookie:active {
-      cursor: grabbing;
+      z-index: 1;
+      pointer-events: none; /* allow dragging through */
     }
 
     .fortune-slot {
       position: absolute;
-      top: 48%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 200px;
       height: 40px;
-      overflow: hidden;
-      z-index: 1;
+      overflow: visible;
+      z-index: 3;
     }
 
     .fortune-paper {
-      top: 0;
       position: absolute;
+      top: 0;
       left: 50%;
       transform: translateX(-50%);
       width: 180px;
@@ -55,11 +51,12 @@
       background: #fffef8;
       border-radius: 3px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      color: #2a5bd7; /* classic fortune blue */
+      color: #2a5bd7;
       font-size: 14px;
       line-height: 1.6;
       text-align: center;
       cursor: grab;
+      z-index: 4;
     }
 
     .fortune-paper:active {
@@ -70,69 +67,55 @@
       margin-top: 14px;
       font-size: 13px;
       color: #aaa;
-      letter-spacing: 0.5px;
     }
   </style>
 </head>
 <body>
 
-  <div class="cookie-container">
-    <img
-      src="hp-c1-col2-img2.png"
-      alt="Fortune Cookie"
-      class="cookie"
-      draggable="false"
-    />
+<div class="cookie-container">
+  <img src="hp-c1-col2-img2.png" alt="Fortune Cookie" class="cookie" draggable="false" />
 
-    <div class="fortune-slot">
-      <div class="fortune-paper" id="fortune">
-        You have found love and happiness this past year per my last fortune cookie message, and more to come with the person who youve spent it with! More love more happiness with you terlover, I hope that we can find our way back to our love if its how it was or a completely new thing. 365 days with you my terdle and hoping for another 365 milleniums at the very least with you. I love you so much.
-      </div>
+  <div class="fortune-slot">
+    <div class="fortune-paper" id="fortune">
+      You have found love and happiness this past year per my last fortune cookie message, and more to come with the person who youve spent it with! More love more happiness with you terlover, I hope that we can find our way back to our love if its how it was or a completely new thing. 365 days with you my terdle and hoping for another 365 milleniums at the very least with you. I love you so much.
     </div>
-
-    <div class="hint">Drag the fortune out to reveal more</div>
   </div>
 
-  <script>
-    const fortune = document.getElementById("fortune");
+  <div class="hint">Drag the fortune out to reveal more</div>
+</div>
 
-    let isDragging = false;
-    let startY = 0;
-    let currentY = 0;
+<script>
+  const fortune = document.getElementById("fortune");
 
-    fortune.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      startY = e.clientY - currentY;
-    });
+  let dragging = false;
+  let startY = 0;
+  let currentY = 0;
 
-    document.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      currentY = e.clientY - startY;
-      if (currentY < 0) currentY = 0;
-      fortune.style.top = currentY + "px";
-    });
+  function startDrag(y) {
+    dragging = true;
+    startY = y - currentY;
+  }
 
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-    });
+  function drag(y) {
+    if (!dragging) return;
+    currentY = y - startY;
+    if (currentY < 0) currentY = 0;
+    if (currentY > 260) currentY = 260;
+    fortune.style.top = currentY + "px";
+  }
 
-    // Touch support
-    fortune.addEventListener("touchstart", (e) => {
-      isDragging = true;
-      startY = e.touches[0].clientY - currentY;
-    });
+  function stopDrag() {
+    dragging = false;
+  }
 
-    document.addEventListener("touchmove", (e) => {
-      if (!isDragging) return;
-      currentY = e.touches[0].clientY - startY;
-      if (currentY < 0) currentY = 0;
-      fortune.style.top = currentY + "px";
-    });
+  fortune.addEventListener("mousedown", e => startDrag(e.clientY));
+  document.addEventListener("mousemove", e => drag(e.clientY));
+  document.addEventListener("mouseup", stopDrag);
 
-    document.addEventListener("touchend", () => {
-      isDragging = false;
-    });
-  </script>
+  fortune.addEventListener("touchstart", e => startDrag(e.touches[0].clientY));
+  document.addEventListener("touchmove", e => drag(e.touches[0].clientY));
+  document.addEventListener("touchend", stopDrag);
+</script>
 
 </body>
 </html>
