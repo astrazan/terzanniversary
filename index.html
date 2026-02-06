@@ -22,7 +22,7 @@
     height: 300px;
   }
 
-  /* COOKIE IMAGE */
+  /* COOKIE */
   .cookie {
     position: absolute;
     left: 50%;
@@ -33,12 +33,10 @@
     transition: transform 0.3s ease;
   }
 
-  /* click feedback */
   .shake1 { transform: translate(-50%, -50%) rotate(-2deg); }
   .shake2 { transform: translate(-50%, -50%) rotate(2deg); }
   .shake3 { transform: translate(-50%, -50%) scale(0.97); }
 
-  /* fall */
   .fall {
     animation: drop 0.9s ease forwards;
   }
@@ -72,6 +70,7 @@
 
 <body>
   <div class="scene">
+    <!-- COOKIE -->
     <img
       src="cookie.png"
       class="cookie"
@@ -79,11 +78,12 @@
       alt="Fortune Cookie"
     />
 
+    <!-- FORTUNE PAPER -->
     <img
-      id="fortune"
+      src="fortune-paper.png"
       class="fortune"
-      src="data:image/png;base64,PASTE_FULL_FORTUNE_PAPER_BASE64_HERE"
-      alt="Fortune"
+      id="fortune"
+      alt="Fortune Paper"
     />
   </div>
 
@@ -104,8 +104,8 @@
       cookie.classList.add("fall");
 
       setTimeout(() => {
-        cookie.remove();        // 🍪 gone
-        fortune.classList.add("show");
+        cookie.remove();          // 🍪 gone
+        fortune.classList.add("show"); // 📜 revealed
       }, 900);
     }
   });
