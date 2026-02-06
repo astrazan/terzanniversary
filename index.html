@@ -2,146 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<title>Fortune Cookie</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fortune Cookie – Pull Sideways</title>
 
 <style>
+  :root {
+    --bg: #f5efe6;
+    --cookie: #d8b47c;
+    --cookie-dark: #c39a5f;
+    --paper: #fff8e6;
+    --ink: #3a2f1f;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
   body {
     margin: 0;
-    min-height: 100vh;
+    background: var(--bg);
+    font-family: "Times New Roman", Georgia, serif;
+    color: var(--ink);
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: #111;
-    font-family: Georgia, serif;
-  }
-
-  .cookie-container {
-    position: relative;
-    width: 360px;
-    text-align: center;
-    user-select: none;
-    overflow: visible;
-  }
-
-  .cookie {
-    width: 100%;
-    max-width: 360px;
-    height: auto;
-    display: block;
-    pointer-events: none;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* DRAG ZONE */
-  .slot {
-    position: absolute;
-    top: 52%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 220px;
-    height: 50px;
-    z-index: 3;
-    cursor: grab;
-  }
-
-  .slot:active { cursor: grabbing; }
-
-  /* MASK THAT SLIDES SIDEWAYS */
-  .paper-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0px; /* expands horizontally */
-    height: 100%;
+    justify-content: center;
+    height: 100vh;
     overflow: hidden;
   }
 
-  /* PAPER */
-  .paper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 420px; /* intentionally wider than slot */
-    padding: 14px 16px;
-    background: #fffef8;
-    border-radius: 3px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-    color: #2a5bd7;
-    font-size: 14px;
-    line-height: 1.6;
+  .scene {
     text-align: center;
-    transform: translateX(0);
-    transition: none;
+    position: relative;
+    width: 320px;
   }
 
   .hint {
-    margin-top: 14px;
-    font-size: 13px;
-    color: #aaa;
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 14px;
+  }
+
+  .cookie-wrapper {
+    position: relative;
+    width: 220px;
+    height: 140px;
+    margin: 0 auto;
+    cursor: pointer;
+  }
+
+  .cookie {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 120px 120px 80px 80px;
+    background: radial-gradient(circle at 30% 30%, #e8c996, var(--cookie));
+    box-shadow: inset -8px -8px 0 var(--cookie-dark);
+    transition: transform 0.8s ease;
+  }
+
+  .cookie.left {
+    clip-path: inset(0 50% 0 0);
+    z-index: 2;
+  }
+
+  .cookie.right {
+    clip-path: inset(0 0 0 50%);
+    z-index: 1;
+  }
+
+  .cracked .cookie.left {
+    transform: translateX(-55px) rotate(-18deg);
+  }
+
+  .cracked .cookie.right {
+    transform: translateX(55px) rotate(18deg);
+  }
+
+  .fortune {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 260px;
+    padding: 18px 16px;
+    background: var(--paper);
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transform: translate(-50%, -50%) scaleY(0);
+    transform-origin: center;
+    transition: transform 0.8s ease 0.4s;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .cracked .fortune {
+    transform: translate(-50%, -50%) scaleY(1);
+  }
+
+  .footer {
+    margin-top: 18px;
+    font-size: 12px;
+    opacity: 0.6;
   }
 </style>
 </head>
 
 <body>
+  <div class="scene">
+    <div class="hint">click the fortune cookie</div>
 
-<div class="cookie-container">
-  <img src="hp-c1-col2-img2.png" alt="Fortune Cookie" class="cookie" />
+    <div class="cookie-wrapper" id="cookie">
+      <div class="cookie left"></div>
+      <div class="cookie right"></div>
 
-  <div class="slot" id="slot">
-    <div class="paper-mask" id="mask">
-      <div class="paper" id="paper">
+      <div class="fortune">
         You have found love and happiness this past year per my last fortune cookie message, and more to come with the person who youve spent it with! More love more happiness with you terlover, I hope that we can find our way back to our love if its how it was or a completely new thing. 365 days with you my terdle and hoping for another 365 milleniums at the very least with you. I love you so much.
       </div>
     </div>
+
+    <div class="footer">
+      🥠
+    </div>
   </div>
 
-  <div class="hint">Pull the fortune sideways to keep reading</div>
-</div>
-
 <script>
-  const slot = document.getElementById("slot");
-  const mask = document.getElementById("mask");
-  const paper = document.getElementById("paper");
+  const cookie = document.getElementById("cookie");
+  let opened = false;
 
-  let dragging = false;
-  let startX = 0;
-  let pullX = 0;
-
-  const MAX_PULL = 320;
-
-  function startDrag(x) {
-    dragging = true;
-    startX = x - pullX;
-  }
-
-  function drag(x) {
-    if (!dragging) return;
-
-    pullX = x - startX;
-    if (pullX < 0) pullX = 0;
-    if (pullX > MAX_PULL) pullX = MAX_PULL;
-
-    // reveal more paper
-    mask.style.width = pullX + "px";
-
-    // slide paper slightly for motion feel
-    paper.style.transform = `translateX(${pullX * 0.25}px)`;
-  }
-
-  function stopDrag() {
-    dragging = false;
-  }
-
-  slot.addEventListener("mousedown", e => startDrag(e.clientX));
-  document.addEventListener("mousemove", e => drag(e.clientX));
-  document.addEventListener("mouseup", stopDrag);
-
-  slot.addEventListener("touchstart", e => startDrag(e.touches[0].clientX));
-  document.addEventListener("touchmove", e => drag(e.touches[0].clientX));
-  document.addEventListener("touchend", stopDrag);
+  cookie.addEventListener("click", () => {
+    if (opened) return;
+    opened = true;
+    cookie.classList.add("cracked");
+  });
 </script>
-
 </body>
 </html>
+
