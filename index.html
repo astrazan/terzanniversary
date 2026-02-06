@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fortune Cookie</title>
+<title>Fortune Cookie – Pull to Reveal</title>
 
 <style>
   body {
@@ -21,52 +21,54 @@
     width: 360px;
     text-align: center;
     user-select: none;
-    overflow: visible;
   }
 
-  /* COOKIE IMAGE */
   .cookie {
     width: 100%;
     max-width: 360px;
     height: auto;
     display: block;
-    position: relative;
+    pointer-events: none;
     z-index: 1;
-    pointer-events: none; /* CRITICAL */
+    position: relative;
   }
 
-  /* SLOT WHERE YOU DRAG */
-  .fortune-slot {
+  /* DRAG ZONE */
+  .slot {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
-    height: 40px;
+    width: 210px;
+    height: 46px;
     z-index: 3;
     cursor: grab;
   }
 
-  .fortune-slot:active {
-    cursor: grabbing;
-  }
+  .slot:active { cursor: grabbing; }
 
-  /* PAPER */
-  .fortune-paper {
+  /* PAPER WRAPPER (reveals height) */
+  .paper-mask {
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 180px;
-    padding: 12px 10px;
+    width: 190px;
+    height: 0px; /* grows as you pull */
+    overflow: hidden;
+  }
+
+  /* PAPER */
+  .paper {
+    width: 100%;
+    padding: 14px 12px 18px;
     background: #fffef8;
     border-radius: 3px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-    color: #2a5bd7; /* fortune blue */
+    color: #2a5bd7;
     font-size: 14px;
     line-height: 1.6;
     text-align: center;
-    pointer-events: none; /* slot handles dragging */
   }
 
   .hint {
@@ -80,45 +82,43 @@
 <body>
 
 <div class="cookie-container">
-  <img
-    src="hp-c1-col2-img2.png"
-    alt="Fortune Cookie"
-    class="cookie"
-    draggable="false"
-  />
+  <img src="hp-c1-col2-img2.png" alt="Fortune Cookie" class="cookie" />
 
-  <div class="fortune-slot" id="slot">
-    <div class="fortune-paper" id="fortune">
-      You have found love and happiness this past year per my last fortune cookie message, and more to come with the person who youve spent it with! More love more happiness with you terlover, I hope that we can find our way back to our love if its how it was or a completely new thing. 365 days with you my terdle and hoping for another 365 milleniums at the very least with you. I love you so much.
+  <div class="slot" id="slot">
+    <div class="paper-mask" id="mask">
+      <div class="paper" id="paper">
+        You have found love and happiness this past year per my last fortune cookie message, and more to come with the person who youve spent it with! More love more happiness with you terlover, I hope that we can find our way back to our love if its how it was or a completely new thing. 365 days with you my terdle and hoping for another 365 milleniums at the very least with you. I love you so much.
+      </div>
     </div>
   </div>
 
-  <div class="hint">Drag the fortune out to reveal more</div>
+  <div class="hint">Pull the fortune to keep reading</div>
 </div>
 
 <script>
   const slot = document.getElementById("slot");
-  const fortune = document.getElementById("fortune");
+  const mask = document.getElementById("mask");
+  const paper = document.getElementById("paper");
 
   let dragging = false;
   let startY = 0;
-  let currentY = 0;
-  const MAX_PULL = 260;
+  let pull = 0;
+
+  const MAX_PULL = 320;
 
   function startDrag(y) {
     dragging = true;
-    startY = y - currentY;
+    startY = y - pull;
   }
 
   function drag(y) {
     if (!dragging) return;
 
-    currentY = y - startY;
-    if (currentY < 0) currentY = 0;
-    if (currentY > MAX_PULL) currentY = MAX_PULL;
+    pull = y - startY;
+    if (pull < 0) pull = 0;
+    if (pull > MAX_PULL) pull = MAX_PULL;
 
-    fortune.style.transform =
-      `translate(-50%, ${currentY}px)`;
+    mask.style.height = pull + "px";
   }
 
   function stopDrag() {
@@ -129,12 +129,8 @@
   document.addEventListener("mousemove", e => drag(e.clientY));
   document.addEventListener("mouseup", stopDrag);
 
-  slot.addEventListener("touchstart", e =>
-    startDrag(e.touches[0].clientY)
-  );
-  document.addEventListener("touchmove", e =>
-    drag(e.touches[0].clientY)
-  );
+  slot.addEventListener("touchstart", e => startDrag(e.touches[0].clientY));
+  document.addEventListener("touchmove", e => drag(e.touches[0].clientY));
   document.addEventListener("touchend", stopDrag);
 </script>
 
