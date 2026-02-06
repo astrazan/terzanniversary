@@ -10,94 +10,106 @@
     margin: 0;
     background: black;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 100vh;
     overflow: hidden;
-    font-family: Georgia, "Times New Roman", serif;
   }
 
   .scene {
     position: relative;
-    width: 300px;
+    width: 360px;
     height: 300px;
   }
 
   /* COOKIE */
   .cookie {
     position: absolute;
-    width: 220px;
-    height: 140px;
-    background: radial-gradient(circle at 30% 30%, #f1d19b, #d1a566);
-    border-radius: 120px 120px 80px 80px;
-    left: 50%;
     top: 50%;
+    left: 50%;
+    width: 260px;
+    height: 150px;
     transform: translate(-50%, -50%);
-    transition: transform 0.6s ease;
     cursor: pointer;
-    box-shadow: inset -10px -10px 0 rgba(0,0,0,0.15);
   }
 
-  .crack1 { transform: translate(-50%, -50%) rotate(-3deg); }
-  .crack2 { transform: translate(-50%, -50%) rotate(3deg); }
-  .crack3 { transform: translate(-50%, -50%) scale(0.98); }
-
-  .break {
-    animation: fall 1.2s ease forwards;
+  .half {
+    position: absolute;
+    width: 130px;
+    height: 150px;
+    background: radial-gradient(circle at 30% 30%, #f3d7a6, #c8944f);
+    border-radius: 130px 130px 90px 90px;
+    box-shadow: inset -12px -12px 0 rgba(0,0,0,0.2);
+    transition: transform 0.5s ease;
   }
 
-  @keyframes fall {
+  .left {
+    left: 0;
+    clip-path: ellipse(95% 100% at 100% 50%);
+  }
+
+  .right {
+    right: 0;
+    clip-path: ellipse(95% 100% at 0% 50%);
+  }
+
+  /* CRACK STAGES */
+  .stage1 .left { transform: rotate(-5deg); }
+  .stage1 .right { transform: rotate(5deg); }
+
+  .stage2 .left { transform: rotate(-10deg) translateX(-8px); }
+  .stage2 .right { transform: rotate(10deg) translateX(8px); }
+
+  .stage3 .left { transform: rotate(-18deg) translateX(-18px); }
+  .stage3 .right { transform: rotate(18deg) translateX(18px); }
+
+  /* FALL */
+  .fall {
+    animation: drop 0.9s ease forwards;
+  }
+
+  @keyframes drop {
     to {
-      transform: translate(-50%, 120vh) rotate(25deg);
-      opacity: 0;
+      transform: translate(-50%, 140vh) rotate(28deg);
     }
   }
 
-  /* CRACK LINES */
-  .crack-line {
-    position: absolute;
-    width: 3px;
-    height: 80px;
-    background: rgba(90,60,30,0.6);
-    left: 50%;
-    top: 30%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.4s;
-  }
-
-  .show { opacity: 1; }
-
-  /* FORTUNE IMAGE */
+  /* FORTUNE */
   .fortune {
     position: absolute;
-    width: 360px;
-    max-width: 90vw;
+    left: 50%;
+    top: 50%;
+    width: 440px;
+    max-width: 95vw;
+    transform: translate(-50%, 40px);
     opacity: 0;
-    transform: translateY(40px);
     transition: opacity 1.2s ease, transform 1.2s ease;
     pointer-events: none;
   }
 
-  .fortune.reveal {
+  .fortune.show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
   }
 </style>
 </head>
 
 <body>
-  <div class="scene">
+  <div class="scene" id="scene">
     <div class="cookie" id="cookie">
-      <div class="crack-line" id="crack"></div>
+      <div class="half left"></div>
+      <div class="half right"></div>
     </div>
 
-    <img src="fortune-paper.png" class="fortune" id="fortune" />
+    <img
+      id="fortune"
+      class="fortune"
+      src="data:image/png;base64,PASTE_YOUR_FULL_BASE64_IMAGE_HERE"
+    />
   </div>
 
 <script>
   const cookie = document.getElementById("cookie");
-  const crack = document.getElementById("crack");
   const fortune = document.getElementById("fortune");
 
   let clicks = 0;
@@ -105,27 +117,17 @@
   cookie.addEventListener("click", () => {
     clicks++;
 
-    if (clicks === 1) {
-      cookie.classList.add("crack1");
-      crack.classList.add("show");
-    }
-
-    if (clicks === 2) {
-      cookie.classList.remove("crack1");
-      cookie.classList.add("crack2");
-    }
-
-    if (clicks === 3) {
-      cookie.classList.remove("crack2");
-      cookie.classList.add("crack3");
-    }
+    if (clicks === 1) cookie.classList.add("stage1");
+    if (clicks === 2) cookie.classList.add("stage2");
+    if (clicks === 3) cookie.classList.add("stage3");
 
     if (clicks === 4) {
-      cookie.classList.add("break");
+      cookie.classList.add("fall");
 
       setTimeout(() => {
-        fortune.classList.add("reveal");
-      }, 700);
+        cookie.remove(); // 💥 cookie is gone
+        fortune.classList.add("show");
+      }, 900);
     }
   });
 </script>
