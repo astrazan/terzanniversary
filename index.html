@@ -19,14 +19,33 @@
   .scene {
     position: relative;
     width: 360px;
-    height: 300px;
+    height: 360px;
+    text-align: center;
+  }
+
+  /* PROMPT TEXT */
+  .prompt {
+    position: absolute;
+    top: 30px;
+    width: 100%;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+    color: #f5f0e8;
+    opacity: 0.85;
+    transition: opacity 0.8s ease;
+    pointer-events: none;
+  }
+
+  .prompt.hide {
+    opacity: 0;
   }
 
   /* COOKIE */
   .cookie {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 55%;
     width: 220px;
     transform: translate(-50%, -50%);
     cursor: pointer;
@@ -52,7 +71,7 @@
   .fortune {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 55%;
     width: 440px;
     max-width: 95vw;
     transform: translate(-50%, 40px);
@@ -70,6 +89,9 @@
 
 <body>
   <div class="scene">
+    <!-- PROMPT -->
+    <div class="prompt" id="prompt">BREAK ME OPEN</div>
+
     <!-- COOKIE -->
     <img
       src="cookie.png"
@@ -78,7 +100,7 @@
       alt="Fortune Cookie"
     />
 
-    <!-- FORTUNE PAPER -->
+    <!-- FORTUNE -->
     <img
       src="fortune-paper.png"
       class="fortune"
@@ -90,6 +112,7 @@
 <script>
   const cookie = document.getElementById("cookie");
   const fortune = document.getElementById("fortune");
+  const prompt = document.getElementById("prompt");
 
   let clicks = 0;
 
@@ -101,11 +124,12 @@
     if (clicks === 3) cookie.classList.add("shake3");
 
     if (clicks === 4) {
+      prompt.classList.add("hide");
       cookie.classList.add("fall");
 
       setTimeout(() => {
-        cookie.remove();          // 🍪 gone
-        fortune.classList.add("show"); // 📜 revealed
+        cookie.remove();
+        fortune.classList.add("show");
       }, 900);
     }
   });
