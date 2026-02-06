@@ -90,6 +90,17 @@
     transform: translateX(28px) rotate(8deg);
   }
 
+  .cookie {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 260px;
+  height: 160px;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+  }
+  
   /* ===== FORTUNE STRIP ===== */
   .fortune-wrapper {
     position: absolute;
@@ -142,10 +153,11 @@
       <p>Something you’ve been waiting for is already on its way.</p>
     </div>
   </div>
-
-  <div class="cookie" id="cookie">
-    <div class="cookie-half cookie-left"></div>
-    <div class="cookie-half cookie-right"></div>
+    <div class="cookie-mask"></div>
+    
+    <div class="cookie" id="cookie">
+      <div class="cookie-half cookie-left"></div>
+      <div class="cookie-half cookie-right"></div>
   </div>
 </div>
 
