@@ -10,8 +10,8 @@
     margin: 0;
     background: black;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
     overflow: hidden;
   }
@@ -22,59 +22,35 @@
     height: 300px;
   }
 
-  /* COOKIE */
+  /* COOKIE IMAGE */
   .cookie {
     position: absolute;
-    top: 50%;
     left: 50%;
-    width: 260px;
-    height: 150px;
+    top: 50%;
+    width: 220px;
     transform: translate(-50%, -50%);
     cursor: pointer;
+    transition: transform 0.3s ease;
   }
 
-  .half {
-    position: absolute;
-    width: 130px;
-    height: 150px;
-    background: radial-gradient(circle at 30% 30%, #f3d7a6, #c8944f);
-    border-radius: 130px 130px 90px 90px;
-    box-shadow: inset -12px -12px 0 rgba(0,0,0,0.2);
-    transition: transform 0.5s ease;
-  }
+  /* click feedback */
+  .shake1 { transform: translate(-50%, -50%) rotate(-2deg); }
+  .shake2 { transform: translate(-50%, -50%) rotate(2deg); }
+  .shake3 { transform: translate(-50%, -50%) scale(0.97); }
 
-  .left {
-    left: 0;
-    clip-path: ellipse(95% 100% at 100% 50%);
-  }
-
-  .right {
-    right: 0;
-    clip-path: ellipse(95% 100% at 0% 50%);
-  }
-
-  /* CRACK STAGES */
-  .stage1 .left { transform: rotate(-5deg); }
-  .stage1 .right { transform: rotate(5deg); }
-
-  .stage2 .left { transform: rotate(-10deg) translateX(-8px); }
-  .stage2 .right { transform: rotate(10deg) translateX(8px); }
-
-  .stage3 .left { transform: rotate(-18deg) translateX(-18px); }
-  .stage3 .right { transform: rotate(18deg) translateX(18px); }
-
-  /* FALL */
+  /* fall */
   .fall {
     animation: drop 0.9s ease forwards;
   }
 
   @keyframes drop {
     to {
-      transform: translate(-50%, 140vh) rotate(28deg);
+      transform: translate(-50%, 140vh) rotate(25deg);
+      opacity: 0;
     }
   }
 
-  /* FORTUNE */
+  /* FORTUNE PAPER */
   .fortune {
     position: absolute;
     left: 50%;
@@ -95,16 +71,19 @@
 </head>
 
 <body>
-  <div class="scene" id="scene">
-    <div class="cookie" id="cookie">
-      <div class="half left"></div>
-      <div class="half right"></div>
-    </div>
+  <div class="scene">
+    <img
+      src="cookie.png"
+      class="cookie"
+      id="cookie"
+      alt="Fortune Cookie"
+    />
 
     <img
       id="fortune"
       class="fortune"
-      src="data:image/png;base64,PASTE_YOUR_FULL_BASE64_IMAGE_HERE"
+      src="data:image/png;base64,PASTE_FULL_FORTUNE_PAPER_BASE64_HERE"
+      alt="Fortune"
     />
   </div>
 
@@ -117,15 +96,15 @@
   cookie.addEventListener("click", () => {
     clicks++;
 
-    if (clicks === 1) cookie.classList.add("stage1");
-    if (clicks === 2) cookie.classList.add("stage2");
-    if (clicks === 3) cookie.classList.add("stage3");
+    if (clicks === 1) cookie.classList.add("shake1");
+    if (clicks === 2) cookie.classList.add("shake2");
+    if (clicks === 3) cookie.classList.add("shake3");
 
     if (clicks === 4) {
       cookie.classList.add("fall");
 
       setTimeout(() => {
-        cookie.remove(); // 💥 cookie is gone
+        cookie.remove();        // 🍪 gone
         fortune.classList.add("show");
       }, 900);
     }
